@@ -1,0 +1,37 @@
+// Breakpoints
+$mobile: 768px;
+$tablet: 1024px;
+
+// Désactivation des animations sur mobile si nécessaire
+[data-device="mobile"][data-animations-disabled] {
+    .upgsap-animation {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+// Adaptations tablette
+@media (max-width: $tablet) {
+    .upgsap-animation {
+        --animation-scale: 0.8;
+        --animation-duration: 0.8;
+    }
+}
+
+// Adaptations mobile
+@media (max-width: $mobile) {
+    .upgsap-animation {
+        --animation-scale: 0.6;
+        --animation-duration: 0.6;
+    }
+}
+
+// Support reduced-motion
+@media (prefers-reduced-motion: reduce) {
+    .upgsap-animation {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+} 
