@@ -3,62 +3,162 @@
  * Classe principale du plugin
  */
 class UPGSAP_Core {
-    private $version;
+    private $version = '1.0.0';
     private $animation_manager;
     private $timeline_manager;
     private $data_store;
 
     public function __construct() {
-        $this->version = UPGSAP_VERSION;
-    }
-
-    public function init() {
         $this->load_dependencies();
+        $this->init();
         $this->register_hooks();
     }
 
-    private function load_dependencies() {
-        require_once UPGSAP_PLUGIN_DIR . 'includes/class-animation-manager.php';
-        require_once UPGSAP_PLUGIN_DIR . 'includes/class-timeline-manager.php';
-        require_once UPGSAP_PLUGIN_DIR . 'includes/class-data-store.php';
-
-        $this->animation_manager = new UPGSAP_Animation_Manager();
-        $this->timeline_manager = new UPGSAP_Timeline_Manager();
+    public function init() {
         $this->data_store = new UPGSAP_Data_Store();
+        $this->animation_manager = new UPGSAP_Animation_Manager($this->data_store);
+        // Initialisation des autres managers à venir
     }
 
-    private function register_hooks() {
-        register_activation_hook(UPGSAP_PLUGIN_DIR . 'up-gsap-animate-2.php', array($this, 'activate'));
-        register_deactivation_hook(UPGSAP_PLUGIN_DIR . 'up-gsap-animate-2.php', array($this, 'deactivate'));
-        
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+    public function register_hooks() {
+        add_action('init', [$this, 'register_block']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+        add_action('admin_enqueue_scripts', [$this, 'admin_enqueue_scripts']);
     }
 
-    public function activate() {
-        // Code d'activation
+    public function load_dependencies() {
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-data-store.php';
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-animation-manager.php';
+        // Chargement des autres dépendances
     }
 
-    public function deactivate() {
-        // Code de désactivation
-    }
-
+    /**
+     * Enregistre les scripts et styles pour le front-end
+     */
     public function enqueue_scripts() {
-        // Chargement conditionnel de GSAP
-        if ($this->should_load_gsap()) {
-            wp_enqueue_script('gsap-core', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js', array(), '3.12.2', true);
-            wp_enqueue_script('gsap-scroll-trigger', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js', array('gsap-core'), '3.12.2', true);
-        }
+        // GSAP Core
+        wp_enqueue_script(
+            'gsap-core',
+            'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js',
+            [],
+            '3.12.2',
+            true
+        );
+
+        // ScrollTrigger
+        wp_enqueue_script(
+            'gsap-scrolltrigger',
+            'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js',
+            ['gsap-core'],
+            '3.12.2',
+            true
+        );
+
+        // Plugin Scripts
+        wp_enqueue_script(
+            'up-gsap-animate-public',
+            plugin_dir_url(dirname(__FILE__)) . 'public/js/animations.js',
+            ['gsap-core', 'gsap-scrolltrigger'],
+            $this->version,
+            true
+        );
+
+        // Plugin Styles
+        wp_enqueue_style(
+            'up-gsap-animate-public',
+            plugin_dir_url(dirname(__FILE__)) . 'public/css/animations.css',
+            [],
+            $this->version
+        );
     }
 
-    private function should_load_gsap() {
-        // Vérification si la page contient des animations
-        return true; // À implémenter plus tard
+    /**
+     * Enregistre les scripts et styles pour l'admin
+     */
+    public function admin_enqueue_scripts($hook) {
+        // N'enregistrer que sur les pages d'administration du plugin
+        if (!in_array($hook, array('post.php', 'post-new.php'))) {
+            return;
+        }
+
+        // Admin styles
+        wp_enqueue_style(
+            'upgsap-admin-style',
+            plugin_dir_url(dirname(__FILE__)) . 'admin/css/admin.css',
+            array(),
+            $this->version
+        );
+
+        // Admin scripts
+        wp_enqueue_script(
+            'upgsap-admin',
+            plugin_dir_url(dirname(__FILE__)) . 'admin/js/admin.js',
+            array('jquery'),
+            $this->version,
+            true
+        );
+
+        wp_localize_script('upgsap-admin', 'upgsapAdmin', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('upgsap-admin-nonce'),
+            'confirmDelete' => __('Are you sure you want to delete this animation?', 'up-gsap-animate-2')
+        ));
     }
 
-    public function enqueue_admin_scripts($hook) {
-        if ('post.php' === $hook || 'post-new.php' === $hook) {
-            wp_enqueue_script('upgsap-admin', UPGSAP_PLUGIN_URL . 'admin/js/admin.js', array('wp-blocks', 'wp-element'), $this->version, true);
+    /**
+     * Enregistre le bloc Gutenberg
+     */
+    public function register_block() {
+        // Éviter le double enregistrement
+        if (WP_Block_Type_Registry::get_instance()->is_registered('upgsap/animation-controls')) {
+            return;
         }
+
+        register_block_type(
+            plugin_dir_path(dirname(__FILE__)) . 'blocks/animation-controls',
+            [
+                'editor_script' => 'up-gsap-animate-block',
+                'editor_style'  => 'up-gsap-animate-block-editor',
+                'render_callback' => [$this, 'render_animation_block']
+            ]
+        );
+
+        // Enregistrer le script du bloc
+        wp_register_script(
+            'up-gsap-animate-block',
+            plugin_dir_url(dirname(__FILE__)) . 'blocks/animation-controls/index.js',
+            ['wp-blocks', 'wp-element', 'wp-editor', 'wp-components'],
+            $this->version,
+            true
+        );
+
+        // Enregistrer le style du bloc
+        wp_register_style(
+            'up-gsap-animate-block-editor',
+            plugin_dir_url(dirname(__FILE__)) . 'blocks/animation-controls/editor.css',
+            ['wp-edit-blocks'],
+            $this->version
+        );
     }
-} 
+
+    /**
+     * Rendu du bloc d'animation
+     */
+    public function render_animation_block($attributes, $content) {
+        if (empty($attributes['animation'])) {
+            return $content;
+        }
+
+        $animation_data = wp_json_encode($attributes['animation']);
+        $wrapper_attributes = get_block_wrapper_attributes([
+            'class' => 'upgsap-animated',
+            'data-animation' => esc_attr($animation_data)
+        ]);
+
+        return sprintf(
+            '<div %1$s>%2$s</div>',
+            $wrapper_attributes,
+            $content
+        );
+    }
+}

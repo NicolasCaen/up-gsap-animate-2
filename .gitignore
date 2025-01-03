@@ -1,0 +1,4 @@
+/node_modules
+/blocks/animation-controls/build
+.DS_Store
+*.log 

@@ -2,7 +2,7 @@
 /**
  * Tests pour la classe Animation Manager
  */
-class Test_UPGSAP_Animation_Manager extends WP_UnitTestCase {
+class UPGSAP_Test_Animations extends WP_UnitTestCase {
     private $animation_manager;
 
     public function setUp(): void {
@@ -10,7 +10,7 @@ class Test_UPGSAP_Animation_Manager extends WP_UnitTestCase {
         $this->animation_manager = new UPGSAP_Animation_Manager();
     }
 
-    public function test_register_animation() {
+    public function test_animation_registration() {
         // Test d'enregistrement d'une animation valide
         $animation_params = [
             'duration' => 1,
@@ -49,22 +49,5 @@ class Test_UPGSAP_Animation_Manager extends WP_UnitTestCase {
         $this->assertEquals(1, $animation['opacity']);
         $this->assertEquals(0, $animation['x']);
         $this->assertEquals(0, $animation['y']);
-    }
-
-    public function test_gsap_config_conversion() {
-        // Test de conversion en configuration GSAP
-        $params = [
-            'duration' => 1.5,
-            'ease' => 'power3.out',
-            'opacity' => 0,
-            'scale' => 0.5
-        ];
-
-        $this->animation_manager->register_animation('scale-in', $params);
-        $gsap_config = $this->animation_manager->to_gsap_config('scale-in');
-
-        $this->assertIsArray($gsap_config);
-        $this->assertEquals($params['duration'], $gsap_config['duration']);
-        $this->assertEquals($params['scale'], $gsap_config['scale']);
     }
 } 

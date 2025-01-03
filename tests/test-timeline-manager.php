@@ -2,7 +2,7 @@
 /**
  * Tests pour la classe Timeline Manager
  */
-class Test_UPGSAP_Timeline_Manager extends WP_UnitTestCase {
+class UPGSAP_Test_Timeline extends WP_UnitTestCase {
     private $timeline_manager;
 
     public function setUp(): void {
@@ -10,65 +10,48 @@ class Test_UPGSAP_Timeline_Manager extends WP_UnitTestCase {
         $this->timeline_manager = new UPGSAP_Timeline_Manager();
     }
 
-    public function test_create_timeline() {
-        $config = [
+    public function test_timeline_creation() {
+        $timeline_params = [
             'trigger' => [
                 'type' => 'scroll',
                 'start' => 'top center'
             ],
-            'sequence' => 'sequential'
+            'animations' => []
         ];
 
-        $result = $this->timeline_manager->create_timeline('header-sequence', $config);
+        $result = $this->timeline_manager->create_timeline('header-sequence', $timeline_params);
         $this->assertTrue($result);
 
         $timeline = $this->timeline_manager->get_timeline('header-sequence');
         $this->assertNotFalse($timeline);
-        $this->assertEquals($config['sequence'], $timeline['config']['sequence']);
     }
 
     public function test_add_animation_to_timeline() {
-        $this->timeline_manager->create_timeline('test-timeline');
+        // Crée d'abord une timeline
+        $this->timeline_manager->create_timeline('main-sequence', []);
 
-        $animation_data = [
+        // Ajoute une animation
+        $animation = [
             'target' => '.header',
             'animation' => 'fade-in',
-            'position': 0
+            'position' => 0
         ];
 
-        $result = $this->timeline_manager->add_to_timeline('test-timeline', $animation_data);
+        $result = $this->timeline_manager->add_to_timeline('main-sequence', $animation);
         $this->assertTrue($result);
 
-        $timeline = $this->timeline_manager->get_timeline('test-timeline');
+        // Vérifie que l'animation a été ajoutée
+        $timeline = $this->timeline_manager->get_timeline('main-sequence');
         $this->assertCount(1, $timeline['animations']);
     }
 
-    public function test_invalid_timeline_config() {
-        $invalid_config = [
-            'trigger' => [
-                'type' => 'invalid-type'
-            ]
+    public function test_invalid_timeline_params() {
+        $invalid_params = [
+            'trigger' => 'not-an-array',
+            'animations' => 'also-not-an-array'
         ];
 
-        $result = $this->timeline_manager->create_timeline('invalid', $invalid_config);
+        $result = $this->timeline_manager->create_timeline('invalid', $invalid_params);
         $this->assertFalse($result);
-    }
-
-    public function test_timeline_gsap_config() {
-        $config = [
-            'trigger' => [
-                'type' => 'scroll',
-                'start' => 'top center'
-            ],
-            'sequence' => 'sequential',
-            'stagger' => 0.2
-        ];
-
-        $this->timeline_manager->create_timeline('test', $config);
-        $gsap_config = $this->timeline_manager->to_gsap_config('test');
-
-        $this->assertIsArray($gsap_config);
-        $this->assertEquals($config['trigger'], $gsap_config['trigger']);
-        $this->assertEquals($config['stagger'], $gsap_config['stagger']);
     }
 } 

@@ -4,51 +4,37 @@
  */
 class UPGSAP_Timeline_Manager {
     /**
-     * Liste des timelines
+     * Liste des timelines enregistrées
      */
     private $timelines = [];
 
     /**
-     * Configuration par défaut d'une timeline
-     */
-    private $default_config = [
-        'trigger' => [
-            'type' => 'scroll',
-            'start' => 'top center',
-            'end' => 'bottom center',
-            'scrub' => false
-        ],
-        'sequence' => 'sequential',
-        'stagger' => 0.2
-    ];
-
-    /**
      * Crée une nouvelle timeline
      */
-    public function create_timeline($id, $config = []) {
-        $config = wp_parse_args($config, $this->default_config);
-        
-        if (!$this->validate_config($config)) {
+    public function create_timeline($id, $params) {
+        if (!$this->validate_timeline_params($params)) {
             return false;
         }
 
-        $this->timelines[$id] = [
-            'config' => $config,
-            'animations' => []
-        ];
-
+        $this->timelines[$id] = array_merge($this->get_default_timeline_params(), $params);
+        
+        do_action('upgsap_after_timeline_created', $id);
         return true;
     }
 
     /**
      * Ajoute une animation à une timeline
      */
-    public function add_to_timeline($timeline_id, $animation_data) {
+    public function add_to_timeline($timeline_id, $animation) {
         if (!isset($this->timelines[$timeline_id])) {
             return false;
         }
 
-        $this->timelines[$timeline_id]['animations'][] = $animation_data;
+        if (!isset($this->timelines[$timeline_id]['animations'])) {
+            $this->timelines[$timeline_id]['animations'] = [];
+        }
+
+        $this->timelines[$timeline_id]['animations'][] = $animation;
         return true;
     }
 
@@ -60,15 +46,15 @@ class UPGSAP_Timeline_Manager {
     }
 
     /**
-     * Valide la configuration d'une timeline
+     * Valide les paramètres d'une timeline
      */
-    private function validate_config($config) {
-        if (!isset($config['trigger']) || !is_array($config['trigger'])) {
+    private function validate_timeline_params($params) {
+        // Validation basique
+        if (isset($params['trigger']) && !is_array($params['trigger'])) {
             return false;
         }
 
-        $valid_trigger_types = ['scroll', 'load', 'click'];
-        if (!in_array($config['trigger']['type'], $valid_trigger_types)) {
+        if (isset($params['animations']) && !is_array($params['animations'])) {
             return false;
         }
 
@@ -76,7 +62,22 @@ class UPGSAP_Timeline_Manager {
     }
 
     /**
-     * Convertit une timeline en configuration GSAP
+     * Paramètres par défaut d'une timeline
+     */
+    private function get_default_timeline_params() {
+        return [
+            'trigger' => [
+                'type' => 'scroll',
+                'start' => 'top center'
+            ],
+            'animations' => [],
+            'stagger' => 0,
+            'position' => '+=0'
+        ];
+    }
+
+    /**
+     * Convertit la timeline en configuration GSAP
      */
     public function to_gsap_config($timeline_id) {
         $timeline = $this->get_timeline($timeline_id);
@@ -84,11 +85,6 @@ class UPGSAP_Timeline_Manager {
             return false;
         }
 
-        return [
-            'trigger' => $timeline['config']['trigger'],
-            'animations' => $timeline['animations'],
-            'sequence' => $timeline['config']['sequence'],
-            'stagger' => $timeline['config']['stagger']
-        ];
+        return apply_filters('upgsap_timeline_config', $timeline, $timeline_id);
     }
 } 

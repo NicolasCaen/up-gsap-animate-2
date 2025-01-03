@@ -1,0 +1,27 @@
+{
+  "name": "up-gsap-animate-2",
+  "version": "1.0.0",
+  "description": "GSAP Animation Manager for WordPress",
+  "scripts": {
+    "build": "babel src -d dist",
+    "watch": "babel src -d dist --watch",
+    "start": "wp-scripts start",
+    "check-engines": "wp-scripts check-engines"
+  },
+  "dependencies": {
+    "gsap": "^3.12.2"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^26.9.0",
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/preset-react": "^7.23.0",
+    "babel-loader": "^9.1.2",
+    "css-loader": "^6.8.1",
+    "mini-css-extract-plugin": "^2.7.6",
+    "sass": "^1.63.4",
+    "sass-loader": "^13.3.2",
+    "style-loader": "^3.3.3"
+  }
+}

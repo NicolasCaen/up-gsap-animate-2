@@ -1,0 +1,57 @@
+.upgsap-block-preview {
+    position: relative;
+    padding: 20px;
+    border: 1px dashed #ccc;
+    margin: 10px 0;
+    background: #f9f9f9;
+}
+
+.upgsap-block-preview::before {
+    content: '✨ GSAP Animation';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: #fff;
+    padding: 0 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.upgsap-animation-preview {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f7f7;
+    border-radius: 4px;
+}
+
+.components-panel__body .components-base-control {
+    margin-bottom: 16px;
+}
+
+.components-panel__body .components-base-control__help {
+    margin-top: 4px;
+    font-style: italic;
+    color: #666;
+}
+
+/* Animation preview states */
+.upgsap-block-preview[data-animation-type="fade"] {
+    opacity: 0.7;
+}
+
+.upgsap-block-preview[data-animation-type="slide"] {
+    transform: translateY(10px);
+    opacity: 0.7;
+}
+
+.upgsap-block-preview[data-animation-type="scale"] {
+    transform: scale(0.95);
+    opacity: 0.7;
+}
+
+.upgsap-block-preview[data-animation-type="rotate"] {
+    transform: rotate(-5deg);
+    opacity: 0.7;
+}

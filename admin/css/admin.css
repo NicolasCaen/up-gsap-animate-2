@@ -1,0 +1,82 @@
+/* Styles pour l'interface d'administration */
+.upgsap-admin-wrapper {
+    padding: 20px;
+}
+
+.upgsap-admin-header {
+    margin-bottom: 30px;
+}
+
+.upgsap-admin-header h1 {
+    color: #23282d;
+    font-size: 23px;
+    font-weight: 400;
+    margin: 0;
+    padding: 9px 0 4px;
+    line-height: 1.3;
+}
+
+.upgsap-admin-content {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    padding: 20px;
+}
+
+/* Animation List */
+.upgsap-animation-list {
+    margin-top: 20px;
+}
+
+.upgsap-animation-item {
+    background: #f8f9f9;
+    border: 1px solid #e2e4e7;
+    margin-bottom: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.upgsap-animation-name {
+    font-weight: 600;
+}
+
+.upgsap-animation-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Forms */
+.upgsap-form-row {
+    margin-bottom: 15px;
+}
+
+.upgsap-form-row label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.upgsap-form-row input[type="text"],
+.upgsap-form-row select {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Messages */
+.upgsap-notice {
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-left: 4px solid;
+}
+
+.upgsap-notice-success {
+    background: #f0f8f0;
+    border-color: #46b450;
+}
+
+.upgsap-notice-error {
+    background: #fef7f7;
+    border-color: #dc3232;
+}
