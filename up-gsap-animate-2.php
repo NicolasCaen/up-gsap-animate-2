@@ -17,6 +17,7 @@ class UP_GSAP_Animate {
     public function __construct() {
         add_action('plugins_loaded', array($this, 'init'));
         add_action('enqueue_block_editor_assets', array($this, 'enqueue_editor_assets'));
+        add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_assets'));
     }
 
     public function init() {
@@ -34,7 +35,7 @@ class UP_GSAP_Animate {
         // Scripts
         wp_enqueue_script(
             'upgsap-editor',
-            UPGSAP_PLUGIN_URL . 'dist/blocks/animation-controls/index.js', // Changé pour utiliser le fichier compilé
+            UPGSAP_PLUGIN_URL . 'dist/blocks/animation-controls/index.js',
             array(
                 'wp-blocks',
                 'wp-i18n',
@@ -65,6 +66,46 @@ class UP_GSAP_Animate {
                 'version' => UPGSAP_VERSION,
                 'nonce' => wp_create_nonce('upgsap-nonce')
             )
+        );
+    }
+
+    /**
+     * Enregistre les assets pour le front-end
+     */
+    public function enqueue_frontend_assets() {
+        // GSAP Core
+        wp_enqueue_script(
+            'gsap',
+            'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js',
+            array(),
+            '3.12.4',
+            true
+        );
+
+        // ScrollTrigger
+        wp_enqueue_script(
+            'gsap-scroll-trigger',
+            'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js',
+            array('gsap'),
+            '3.12.4',
+            true
+        );
+
+        // Notre script d'animation
+        wp_enqueue_script(
+            'upgsap-front',
+            UPGSAP_PLUGIN_URL . 'public/js/animations.js',
+            array('gsap', 'gsap-scroll-trigger'),
+            UPGSAP_VERSION,
+            true
+        );
+
+        // Styles d'animation
+        wp_enqueue_style(
+            'upgsap-animations',
+            UPGSAP_PLUGIN_URL . 'public/css/animations.css',
+            array(),
+            UPGSAP_VERSION
         );
     }
 

@@ -1,0 +1,32 @@
+/* Styles de base pour les animations */
+.upgsap-animated {
+    will-change: transform, opacity;
+}
+
+/* État initial pour l'animation de fondu */
+.upgsap-animated[data-animation-type="fade"] {
+    opacity: 0;
+}
+
+/* État initial pour l'animation de glissement */
+.upgsap-animated[data-animation-type="slide"] {
+    opacity: 0;
+    transform: translateX(-100px);
+}
+
+/* État initial pour l'animation d'échelle */
+.upgsap-animated[data-animation-type="scale"] {
+    opacity: 0;
+    transform: scale(0);
+}
+
+/* État initial pour l'animation de rotation */
+.upgsap-animated[data-animation-type="rotate"] {
+    opacity: 0;
+    transform: rotate(-180deg);
+}
+
+/* Classe ajoutée une fois que GSAP a initialisé l'animation */
+.upgsap-initialized {
+    visibility: visible;
+}

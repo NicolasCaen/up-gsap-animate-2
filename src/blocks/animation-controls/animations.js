@@ -1,3 +1,4 @@
+// Fonction d'initialisation des animations
 (function() {
     'use strict';
 
@@ -27,51 +28,52 @@
                 
                 if (!animationData || !animationData.enabled) return;
 
-                // Définir l'état initial
-                let fromState = { opacity: 0 };
-                let toState = { opacity: 1 };
+                // Configurer les paramètres de l'animation
+                const animationConfig = {
+                    duration: animationData.duration,
+                    ease: animationData.ease
+                };
 
                 // Ajouter les propriétés spécifiques selon le type d'animation
                 switch (animationData.type) {
                     case 'fade':
-                        // Déjà géré par les états par défaut
+                        animationConfig.opacity = 0;
+                        element.style.opacity = 0;
                         break;
                     case 'slide':
-                        fromState.x = -100;
-                        toState.x = 0;
+                        animationConfig.x = -100;
+                        element.style.transform = 'translateX(-100px)';
                         break;
                     case 'scale':
-                        fromState.scale = 0;
-                        toState.scale = 1;
+                        animationConfig.scale = 0;
+                        element.style.transform = 'scale(0)';
                         break;
                     case 'rotate':
-                        fromState.rotation = -180;
-                        toState.rotation = 0;
+                        animationConfig.rotation = -180;
+                        element.style.transform = 'rotate(-180deg)';
                         break;
                 }
 
-                // Ajouter la durée et l'ease aux états finaux
-                toState.duration = animationData.duration;
-                toState.ease = animationData.ease;
-
                 // Créer l'animation
-                const tl = gsap.timeline({ paused: true });
-
-                // Définir l'état initial
-                gsap.set(element, fromState);
+                const tl = gsap.timeline({
+                    paused: true,
+                    defaults: {
+                        duration: animationData.duration,
+                        ease: animationData.ease
+                    }
+                });
 
                 // Ajouter l'animation à la timeline
-                tl.to(element, toState);
+                tl.to(element, animationConfig);
 
                 // Configurer le déclencheur selon le type
                 switch (animationData.trigger.type) {
                     case 'scroll':
                         ScrollTrigger.create({
                             trigger: element,
-                            start: animationData.trigger.start || 'top center',
+                            start: animationData.trigger.start,
                             onEnter: () => tl.play(),
                             markers: animationData.trigger.markers,
-                            once: true,
                             scrub: animationData.trigger.scrubType !== 'none' ? 
                                    (animationData.trigger.scrubType === 'smooth' ? 1 : true) : 
                                    false

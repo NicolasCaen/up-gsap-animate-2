@@ -2,101 +2,107 @@
 (function() {
     'use strict';
 
-    // Attendre que le DOM soit chargé
     document.addEventListener('DOMContentLoaded', function() {
-        initGSAPAnimations();
-    });
+        // Vérifier que GSAP est chargé
+        if (typeof gsap === 'undefined') {
+            console.error('GSAP n\'est pas chargé');
+            return;
+        }
 
-    function initGSAPAnimations() {
+        // Vérifier que ScrollTrigger est chargé
+        if (typeof ScrollTrigger === 'undefined') {
+            console.error('ScrollTrigger n\'est pas chargé');
+            return;
+        }
+
         // Enregistrer le plugin ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
 
-        // Trouver tous les éléments animés
+        // Sélectionner tous les éléments avec animation
         const animatedElements = document.querySelectorAll('.upgsap-animated');
 
         animatedElements.forEach(element => {
-            const animationData = JSON.parse(element.dataset.animation);
-            createAnimation(element, animationData);
-        });
-    }
+            try {
+                // Récupérer les paramètres d'animation
+                const animationData = JSON.parse(element.dataset.animation);
+                
+                if (!animationData || !animationData.enabled) return;
 
-    function createAnimation(element, animationData) {
-        // Créer les paramètres d'animation en fonction du type
-        const animationParams = createAnimationParams(animationData);
-
-        // Créer les paramètres du trigger
-        const triggerParams = createTriggerParams(animationData.trigger, element);
-
-        // Créer l'animation GSAP
-        gsap.from(element, {
-            ...animationParams,
-            ...triggerParams
-        });
-    }
-
-    function createAnimationParams(animationData) {
-        const params = {
-            duration: animationData.duration || 1,
-            ease: animationData.ease || 'power2.out'
-        };
-
-        // Ajouter les paramètres spécifiques au type d'animation
-        switch (animationData.type) {
-            case 'fade':
-                params.opacity = 0;
-                break;
-            case 'slide':
-                params.y = 50;
-                params.opacity = 0;
-                break;
-            case 'scale':
-                params.scale = 0.5;
-                params.opacity = 0;
-                break;
-            case 'rotate':
-                params.rotation = -45;
-                params.opacity = 0;
-                break;
-            default:
-                params.opacity = 0;
-        }
-
-        return params;
-    }
-
-    function createTriggerParams(triggerData, element) {
-        const params = {};
-
-        switch (triggerData.type) {
-            case 'scroll':
-                params.scrollTrigger = {
-                    trigger: element,
-                    start: triggerData.start || 'top center',
-                    markers: triggerData.markers || false
+                // Configurer les paramètres de l'animation
+                const animationConfig = {
+                    duration: animationData.duration,
+                    ease: animationData.ease
                 };
 
-                // Gérer le scrub
-                if (triggerData.scrubType !== 'none') {
-                    params.scrollTrigger.scrub = triggerData.scrubType === 'smooth' ? 1 : true;
+                // Ajouter les propriétés spécifiques selon le type d'animation
+                switch (animationData.type) {
+                    case 'fade':
+                        animationConfig.opacity = 0;
+                        element.style.opacity = 0;
+                        break;
+                    case 'slide':
+                        animationConfig.x = -100;
+                        element.style.transform = 'translateX(-100px)';
+                        break;
+                    case 'scale':
+                        animationConfig.scale = 0;
+                        element.style.transform = 'scale(0)';
+                        break;
+                    case 'rotate':
+                        animationConfig.rotation = -180;
+                        element.style.transform = 'rotate(-180deg)';
+                        break;
                 }
-                break;
 
-            case 'load':
-                // L'animation se déclenche automatiquement
-                break;
+                // Créer l'animation
+                const tl = gsap.timeline({
+                    paused: true,
+                    defaults: {
+                        duration: animationData.duration,
+                        ease: animationData.ease
+                    }
+                });
 
-            case 'hover':
-                params.paused = true;
-                element.addEventListener('mouseenter', () => gsap.to(element, params));
-                element.addEventListener('mouseleave', () => gsap.to(element, { opacity: 1, scale: 1, rotation: 0, x: 0, y: 0 }));
-                break;
+                // Ajouter l'animation à la timeline
+                tl.to(element, animationConfig);
 
-            case 'click':
-                params.paused = true;
-                element.addEventListener('click', () => gsap.to(element, params));
-                break;
-        }
+                // Configurer le déclencheur selon le type
+                switch (animationData.trigger.type) {
+                    case 'scroll':
+                        ScrollTrigger.create({
+                            trigger: element,
+                            start: animationData.trigger.start,
+                            onEnter: () => tl.play(),
+                            markers: animationData.trigger.markers,
+                            scrub: animationData.trigger.scrubType !== 'none' ? 
+                                   (animationData.trigger.scrubType === 'smooth' ? 1 : true) : 
+                                   false
+                        });
+                        break;
 
-        return params;
-    }
+                    case 'load':
+                        tl.play();
+                        break;
+
+                    case 'click':
+                        element.addEventListener('click', () => {
+                            tl.restart();
+                        });
+                        break;
+
+                    case 'hover':
+                        element.addEventListener('mouseenter', () => {
+                            tl.play();
+                        });
+                        element.addEventListener('mouseleave', () => {
+                            tl.reverse();
+                        });
+                        break;
+                }
+
+            } catch (error) {
+                console.error('Erreur lors de l\'initialisation de l\'animation:', error);
+            }
+        });
+    });
 })();

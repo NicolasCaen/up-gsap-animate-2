@@ -78,7 +78,8 @@ var withAnimationControls = createHigherOrderComponent(function (BlockEdit) {
       checked: upgsapAnimation.enabled,
       onChange: function onChange(value) {
         return updateAnimation('enabled', value);
-      }
+      },
+      __nextHasNoMarginBottom: true
     }), upgsapAnimation.enabled && [createElement(SelectControl, {
       label: __('Animation Type', 'up-gsap-animate-2'),
       value: upgsapAnimation.type,
@@ -97,7 +98,8 @@ var withAnimationControls = createHigherOrderComponent(function (BlockEdit) {
       }],
       onChange: function onChange(value) {
         return updateAnimation('type', value);
-      }
+      },
+      __nextHasNoMarginBottom: true
     }), createElement(RangeControl, {
       label: __('Duration', 'up-gsap-animate-2'),
       value: upgsapAnimation.duration,
@@ -106,7 +108,8 @@ var withAnimationControls = createHigherOrderComponent(function (BlockEdit) {
       },
       min: 0.1,
       max: 5,
-      step: 0.1
+      step: 0.1,
+      __nextHasNoMarginBottom: true
     }), createElement(SelectControl, {
       label: __('Easing', 'up-gsap-animate-2'),
       value: upgsapAnimation.ease,
@@ -125,7 +128,8 @@ var withAnimationControls = createHigherOrderComponent(function (BlockEdit) {
       }],
       onChange: function onChange(value) {
         return updateAnimation('ease', value);
-      }
+      },
+      __nextHasNoMarginBottom: true
     }), createElement(SelectControl, {
       label: __('Trigger Type', 'up-gsap-animate-2'),
       value: upgsapAnimation.trigger.type,
@@ -144,14 +148,16 @@ var withAnimationControls = createHigherOrderComponent(function (BlockEdit) {
       }],
       onChange: function onChange(value) {
         return updateTrigger('type', value);
-      }
+      },
+      __nextHasNoMarginBottom: true
     }), upgsapAnimation.trigger.type === 'scroll' && [createElement(TextControl, {
       label: __('Start Position', 'up-gsap-animate-2'),
       help: __('Example: top center, 50% 75%', 'up-gsap-animate-2'),
       value: upgsapAnimation.trigger.start,
       onChange: function onChange(value) {
         return updateTrigger('start', value);
-      }
+      },
+      __nextHasNoMarginBottom: true
     }), createElement(SelectControl, {
       label: __('Scrub Type', 'up-gsap-animate-2'),
       value: upgsapAnimation.trigger.scrubType,
@@ -167,13 +173,15 @@ var withAnimationControls = createHigherOrderComponent(function (BlockEdit) {
       }],
       onChange: function onChange(value) {
         return updateTrigger('scrubType', value);
-      }
+      },
+      __nextHasNoMarginBottom: true
     }), createElement(ToggleControl, {
       label: __('Show Markers', 'up-gsap-animate-2'),
       checked: upgsapAnimation.trigger.markers,
       onChange: function onChange(value) {
         return updateTrigger('markers', value);
-      }
+      },
+      __nextHasNoMarginBottom: true
     })]]]))]);
   };
 }, 'withAnimationControls');

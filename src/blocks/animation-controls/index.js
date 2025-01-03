@@ -76,7 +76,8 @@ const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
                     createElement(ToggleControl, {
                         label: __('Enable Animation', 'up-gsap-animate-2'),
                         checked: upgsapAnimation.enabled,
-                        onChange: (value) => updateAnimation('enabled', value)
+                        onChange: (value) => updateAnimation('enabled', value),
+                        __nextHasNoMarginBottom: true
                     }),
                     upgsapAnimation.enabled && [
                         createElement(SelectControl, {
@@ -88,7 +89,8 @@ const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
                                 { label: 'Scale', value: 'scale' },
                                 { label: 'Rotate', value: 'rotate' }
                             ],
-                            onChange: (value) => updateAnimation('type', value)
+                            onChange: (value) => updateAnimation('type', value),
+                            __nextHasNoMarginBottom: true
                         }),
                         createElement(RangeControl, {
                             label: __('Duration', 'up-gsap-animate-2'),
@@ -96,7 +98,8 @@ const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
                             onChange: (value) => updateAnimation('duration', value),
                             min: 0.1,
                             max: 5,
-                            step: 0.1
+                            step: 0.1,
+                            __nextHasNoMarginBottom: true
                         }),
                         createElement(SelectControl, {
                             label: __('Easing', 'up-gsap-animate-2'),
@@ -107,7 +110,8 @@ const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
                                 { label: 'Back.out', value: 'back.out' },
                                 { label: 'Elastic.out', value: 'elastic.out' }
                             ],
-                            onChange: (value) => updateAnimation('ease', value)
+                            onChange: (value) => updateAnimation('ease', value),
+                            __nextHasNoMarginBottom: true
                         }),
                         createElement(SelectControl, {
                             label: __('Trigger Type', 'up-gsap-animate-2'),
@@ -118,14 +122,16 @@ const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
                                 { label: 'Click', value: 'click' },
                                 { label: 'Hover', value: 'hover' }
                             ],
-                            onChange: (value) => updateTrigger('type', value)
+                            onChange: (value) => updateTrigger('type', value),
+                            __nextHasNoMarginBottom: true
                         }),
                         upgsapAnimation.trigger.type === 'scroll' && [
                             createElement(TextControl, {
                                 label: __('Start Position', 'up-gsap-animate-2'),
                                 help: __('Example: top center, 50% 75%', 'up-gsap-animate-2'),
                                 value: upgsapAnimation.trigger.start,
-                                onChange: (value) => updateTrigger('start', value)
+                                onChange: (value) => updateTrigger('start', value),
+                                __nextHasNoMarginBottom: true
                             }),
                             createElement(SelectControl, {
                                 label: __('Scrub Type', 'up-gsap-animate-2'),
@@ -135,12 +141,14 @@ const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
                                     { label: 'True', value: 'true' },
                                     { label: 'Smooth', value: 'smooth' }
                                 ],
-                                onChange: (value) => updateTrigger('scrubType', value)
+                                onChange: (value) => updateTrigger('scrubType', value),
+                                __nextHasNoMarginBottom: true
                             }),
                             createElement(ToggleControl, {
                                 label: __('Show Markers', 'up-gsap-animate-2'),
                                 checked: upgsapAnimation.trigger.markers,
-                                onChange: (value) => updateTrigger('markers', value)
+                                onChange: (value) => updateTrigger('markers', value),
+                                __nextHasNoMarginBottom: true
                             })
                         ]
                     ]
