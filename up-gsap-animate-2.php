@@ -32,6 +32,15 @@ class UP_GSAP_Animate {
      * Enregistre les assets pour l'éditeur
      */
     public function enqueue_editor_assets() {
+        // GSAP Core
+        wp_enqueue_script(
+            'gsap-core',
+            'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js',
+            array(),
+            '3.12.4',
+            true
+        );
+
         // Scripts
         wp_enqueue_script(
             'upgsap-editor',
@@ -43,10 +52,11 @@ class UP_GSAP_Animate {
                 'wp-block-editor',
                 'wp-components',
                 'wp-compose',
-                'wp-hooks'
+                'wp-hooks',
+                'gsap-core'
             ),
             UPGSAP_VERSION,
-            true
+            false // Charger dans le head pour s'assurer que GSAP est disponible
         );
 
         // Styles

@@ -25,6 +25,32 @@
     border-radius: 4px;
 }
 
+.upgsap-preview-button {
+    margin: 16px 0;
+    width: 100%;
+    justify-content: center;
+    
+    &.is-secondary {
+        color: #007cba;
+        border-color: #007cba;
+        
+        &:hover:not(:disabled) {
+            color: #006ba1;
+            border-color: #006ba1;
+            background-color: #f0f0f0;
+        }
+        
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+    
+    .dashicon {
+        margin-right: 8px;
+    }
+}
+
 .components-panel {
     .upgsap-animation-settings {
         margin-bottom: 16px;

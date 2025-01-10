@@ -5,6 +5,8 @@ const { PanelBody, SelectControl, TextControl, RangeControl, ToggleControl } = w
 const { addFilter } = window.wp.hooks;
 const { __ } = window.wp.i18n;
 
+import PreviewButton from './components/PreviewButton';
+
 // Ajouter les attributs d'animation à tous les blocs
 function addAnimationAttributes(settings) {
     settings.attributes = {
@@ -32,7 +34,7 @@ function addAnimationAttributes(settings) {
 // Ajouter le panneau de contrôle d'animation à l'inspecteur
 const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
     return (props) => {
-        const { attributes, setAttributes } = props;
+        const { attributes, setAttributes, clientId } = props;
         const { upgsapAnimation } = attributes;
 
         // Si le bloc n'a pas les attributs d'animation, ne rien faire
@@ -147,7 +149,13 @@ const withAnimationControls = createHigherOrderComponent((BlockEdit) => {
                         checked: upgsapAnimation.enabled,
                         onChange: (value) => updateAnimation('enabled', value)
                     }),
-                    ...animationControls
+                    upgsapAnimation.enabled && [
+                        createElement(PreviewButton, {
+                            animation: upgsapAnimation,
+                            clientId: clientId
+                        }),
+                        ...animationControls
+                    ]
                 ])
             )
         ]);
